@@ -13,7 +13,10 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
+        veri_password = request.form['veri_password']
+        
         db = get_db()
         error = None
 
@@ -21,12 +24,16 @@ def register():
             error = 'Se requiere un usuario.'
         elif not password:
             error = 'Se requiere una contraseña.'
+        elif not email:
+            error = 'Se requiere un email.'
+        elif veri_password != password:
+            error = 'Las contraseñas no coinciden.'    
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO user (username, email, password, veri_password) VALUES (?, ?, ?, ?)",
+                    (username, email, generate_password_hash(password), veri_password),
                 )
                 db.commit()
             except db.IntegrityError:

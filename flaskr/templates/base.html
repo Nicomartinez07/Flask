@@ -2,10 +2,10 @@
 <title>{% block title %}{% endblock %} - Flaskr</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-  <h1>Flaskr</h1>
+  <h1>Fan de alan varela</h1>
   <ul>
     {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
+      <li><span>{{ g.user['username']}} - {{g.user['email']}}</span>
       <li><a href="{{ url_for('auth.logout') }}">Cerrar sesion</a>
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Registrarse</a>
