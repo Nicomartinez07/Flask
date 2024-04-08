@@ -30,9 +30,9 @@ def init_db():
 
 @click.command('init-db')
 def init_db_command():
-    """Clear the existing data and create new tables."""
+    """Limpiar la data existente y crear nuevas tablas."""
     init_db()
-    click.echo('Initialized the database.')
+    click.echo('Database inicializada.')
 
 def init_app(app):
     app.teardown_appcontext(close_db)
