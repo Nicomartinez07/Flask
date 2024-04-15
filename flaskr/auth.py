@@ -9,7 +9,7 @@ from flaskr.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@bp.route('/regist', methods=('GET', 'POST'))
+@bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -80,6 +80,43 @@ def load_logged_in_user():
         g.user = get_db().execute(
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
+
+@bp.route('/modifEmail', methods=('GET', 'POST'))
+def chEmail():
+    if request.method == 'POST':
+        email = request.form['new_email']
+        error = None
+        db = get_db()
+        if not email:
+            error = 'Se requiere el email.'
+
+        if error is None:
+            db.execute(
+                'UPDATE user SET email = ?'
+                ' WHERE id = ?',
+                (email, g.user["id"],)
+            )
+            db.commit()
+            return redirect(url_for('index'))
+
+    return render_template('auth/modifEmail.html')
+
+@bp.route('/delUser', methods=('GET', 'POST'))
+def delUser():
+    if request.method == 'POST':
+        
+        error = None
+        db = get_db()
+        if error is None:
+            db.execute(
+                'DELETE FROM user WHERE id = ?',
+                (g.user["id"],)
+            )
+            db.commit()
+            session.clear()
+            return redirect(url_for('index'))
+
+    return render_template('auth/modifEmail.html')
 
 @bp.route('/logout')
 def logout():

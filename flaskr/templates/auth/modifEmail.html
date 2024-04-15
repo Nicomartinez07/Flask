@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Editar perfil {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="new_email">Cambiar email</label>
+    <input name="new_email" 
+          id="new_email"
+          placeholder="{{ request.form['email'] or g.user['email'] }} (email actual)"
+          required/>
+
+    <input type="submit" value="Guardar">
+  </form>
+  <hr>
+  <form action="{{ url_for('auth.delUser')}}" method="post">
+    <label>Borrar Usuario</label>
+    <input
+      type="submit" 
+      id="delUser"
+      value="Borrar" 
+      onclick="return confirm('Estas seguro de borrar el usuario?');">
+  </form>
+{% endblock %}
