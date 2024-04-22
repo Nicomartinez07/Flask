@@ -12,9 +12,14 @@ bp = Blueprint('blog', __name__)
 def index():
     db = get_db()
     posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
+        """SELECT p.id, title, body, created, author_id, username, IFNULL(sum(v.vote), 0) as Votos,
+        IFNULL(mv.vote, 0) as miVoto 
+         FROM post p JOIN user u ON p.author_id = u.id
+         LEFT JOIN vote v ON v.post_id = p.id
+         LEFT JOIN vote mv ON mv.user_id = u.id
+         GROUP BY p.id
+         ORDER BY created DESC
+         """
     ).fetchall()
     return render_template('blog/index.html', posts=posts)
 
@@ -85,6 +90,32 @@ def update(id):
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)
+
+def vote(user_id, post_id, vote):
+    db = get_db()
+    db.execute(
+        """REPLACE INTO vote(user_id, post_id, vote) VALUES (?, ?, ?); """,
+        (user_id, post_id, vote)
+    )
+    db.commit()
+
+@bp.route('/<int:id>/upvote', methods=('GET',))
+@login_required
+def upvote(id):
+    vote(g.user["id"], id, 1)
+    return redirect(url_for('blog.index'))
+        
+@bp.route('/<int:id>/unvote', methods=('GET',))
+@login_required
+def unvote(id):
+    vote(g.user["id"], id, 0)
+    return redirect(url_for('blog.index'))
+
+@bp.route('/<int:id>/downvote', methods=('GET',))
+@login_required
+def downvote(id):
+    vote(g.user["id"], id, -1)
+    return redirect(url_for('blog.index'))
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))

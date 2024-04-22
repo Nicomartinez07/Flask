@@ -12,15 +12,20 @@
     <article class="post">
       <header>
         <div>
-          <h1>{{ post['title'] }}</h1>
+          <h1>{{ post['title'] }} ({{post['Votos']}})</h1>
           <div class="about">Por {{ post['username'] }} / {{ g.user['email'] }} en {{ post['created'].strftime('%Y-%m-%d') }}</div>
-          
         </div>
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Editar</a>
         {% endif %}
       </header>
       <p class="body">{{ post['body'] }}</p>
+      <a class="{{'vote-selected' if post['miVoto'] == 1 else 'vote'  }}" href="{{ url_for('blog.upvote', id=post['id']) }}">
+        <span class="material-symbols-outlined">sentiment_satisfied</span></a>
+      <a class="{{'vote-selected' if post['miVoto'] == 0 else 'vote'  }}" href="{{ url_for('blog.unvote', id=post['id']) }}">
+       <span class="material-symbols-outlined">sentiment_neutral</span></a>
+      <a class="{{'vote-selected' if post['miVoto'] == -1 else 'vote'  }}" href="{{ url_for('blog.downvote', id=post['id']) }}">
+       <span class="material-symbols-outlined">sentiment_dissatisfied</span></a>
     </article>
     {% if not loop.last %}
       <hr>
